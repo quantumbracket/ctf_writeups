@@ -25,7 +25,7 @@ Now lets try a huge string to check if there is any overflow:
 ![alt text](https://github.com/quantumbracket/ctf_writeups/raw/master/xmasctf2018/I%20want%20that%20toy/iwtt_6.png)
 
 
-Ok, there is a stack smashing detected, we are getting somewhere. Apparently the base64decode function just decodes into the buffer with no checks,its technically a strcpy ,now how do we leak the stack cookie?.  
+Ok, there is a stack smashing detected, we are getting somewhere. Apparently the base64decode function just decodes into the buffer with no limits,its technically a strcpy ,now how do we leak the stack cookie?.  
 one slow approach would be to try every byte of the cookie because our input its not null terminated and also because the cookie its the same between forks.  but there is an easier way, in the route() function this one responds with all the html, but remember it prints our user agent? Well there is a format string vulnerability there, so we can leak a cookie and the program base(remember its PIE compiled)
 
 ![alt text](https://github.com/quantumbracket/ctf_writeups/raw/master/xmasctf2018/I%20want%20that%20toy/iwtt_7.png)
