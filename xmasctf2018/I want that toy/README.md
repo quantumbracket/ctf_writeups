@@ -25,10 +25,11 @@ Now lets try a huge string to check if there is any overflow:
 ![alt text](https://github.com/quantumbracket/ctf_writeups/raw/master/xmasctf2018/I%20want%20that%20toy/iwtt_6.png)
 
 
-Ok, there is a stack smashing detected, we are getting somewhere, apparently the base64decode function just decodes into the buffer with no checks,its technically a strcpy ,now how do we leak the stack cookie?, one slow approach would be to try every byte of the cookie because our input its not null terminated and alse because the cookie its the same between forks, but there is an easier way, in the route function this one responds with all the html, but remember it prints our user agent?. Well there is a format string vulnerability there, so we can leak a cookie and the program base(remember its PIE compiled)
+Ok, there is a stack smashing detected, we are getting somewhere. Apparently the base64decode function just decodes into the buffer with no checks,its technically a strcpy ,now how do we leak the stack cookie?.  
+one slow approach would be to try every byte of the cookie because our input its not null terminated and also because the cookie its the same between forks.  but there is an easier way, in the route() function this one responds with all the html, but remember it prints our user agent? Well there is a format string vulnerability there, so we can leak a cookie and the program base(remember its PIE compiled)
 
 ![alt text](https://github.com/quantumbracket/ctf_writeups/raw/master/xmasctf2018/I%20want%20that%20toy/iwtt_7.png)
-(only stderr is used by the program to print stuff, stdin and stdout point to the clientfd)
+(stderr and stdout are dup2'ed to the socket fd before the route() function is called)
 
 so now with $p and %7$p wa can leak the program base and the stack cookie, but there is no libc leak,what do we do now? easy, just 
 make a rop chain that calls puts with some got address and then returns back to respond, this way we get the leak and have the
@@ -46,7 +47,7 @@ pop rdi -> 4(our socket fd is always 4) -> respond
 
 or in a simplified way:  
 dup2(4,1)  
-puts(PUTS_GOT)  
+puts(puts.got)  
 fflush(0)  
 respond(4)  
 
@@ -61,13 +62,13 @@ constraints:
   rax == NULL  
     
 rop chain:  
-pop rdi -> 4 -> pop rsi; pop r15 -> 0 -> dummy -> dup2  
 pop rdi -> 4 -> pop rsi; pop r15 -> 3 -> dummy -> dup2  
+pop rdi -> 4 -> pop rsi; pop r15 -> 0 -> dummy -> dup2 (this will return 0(stdin) in rax so its just the constraint we need for the one_gadget) 
 one_gadget  
 
 or in a more simplified way:  
-dup2(4,0)  
 dup2(4,3)  
+dup2(4,0)  
 one_gadget  
 
 now we execute it and get the flag:  
