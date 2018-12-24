@@ -14,7 +14,7 @@ This screenshot was taken from my 'I want that toy' writeup. As we can see, ther
 
 Now we know that the name of the executable is 'random_exe_name' so we just have to open it and read it. I wrote a simple script that reads 4000 bytes at a time (tcp cannot handle more than 4096 bytes at a time) and like that it dumps the file.  
 
-but even after dumping a considerable amount of the program, still the data section and some offsets where corrupted. After reversing part of the corrupted data I realized the file was opened in 'r' mode. in some systems you have to open your file in 'rb' mode if you want to read your original data, else all '\n' will get replaced with '\r\n'. so what I just needed to do is to  replace all '\r\n' with '\n'. Now the binary is not corrupted,time to start reversing!!!
+but even after dumping a considerable amount of the program, still the data section and some offsets where corrupted. After reversing part of the corrupted data I realized the file was opened in 'r' mode. in some systems you have to open your file in 'rb' mode if you want to read your original data, else all '\n' will get replaced with '\r\n'(edit: socat might have actually caused this). so what I just needed to do is to  replace all '\r\n' with '\n'. Now the binary is not corrupted,time to start reversing!!!
 
 ![alt text](https://raw.githubusercontent.com/quantumbracket/ctf_writeups/master/xmasctf2018/forbidden%20documents/zz2.png)
 
