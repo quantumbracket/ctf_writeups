@@ -20,7 +20,7 @@ but even after dumping a considerable amount of the program, still the data sect
 
 As we can see in the main function, it asks for the filename, then it checks if it contains 'flag' or 'stdin' and then asks you for your offset and then for the length of your file, and everyhing gets stored in a buffer (s) which is 512 bytes long. Clearly a buffer overflow. to exploit this I used the same approach as with the 'I want that toy': make a rop chain that prints a got address and then returns to main, then overflow again (and the rhymes come out of my brain ;) ) but this time with the libc gadgets. so I did it like this:  
 
-rop gadgets:
+rop gadgets:  
 0x00000000004014f3 : pop rdi ; ret  
 0x00000000004014f1 : pop rsi ; pop r15 ; ret  
 
@@ -43,7 +43,7 @@ This made me struggle. but then I realized that in the redir.sh the socat uses a
 
 >In some operating systems, including Unix, a pseudoterminal, pseudotty, or PTY is a pair of pseudo-devices, one of which, the slave, emulates a hardware text terminal device, the other of which, the master, provides the means by which a terminal emulator process controls the slave.
 
-So its like we are not writing our payload from a socket but rather like from our keyboards. that means that if we write '\x03' its like hitting Control-C. I was looking for resources about control characters but I didnt find any valid escape character (according to wikipedia https://en.wikipedia.org/wiki/C0_and_C1_control_codes#C0_(ASCII_and_derivatives) it should be '\x10'(Data Link Escape) but in this case doesnt work). Eventualy I discovered by experimenting with it a bit that '\x16' escapes the next character(like \\) and that the special characters where 1,2,3,4,8,13,17,18,19,21,22,23,26,27,28 and 127. so I wrote a function that escapes them.  
+So its like we are not writing our payload from a socket but rather like from our keyboard. that means that if we write '\x03' its like hitting Control-C. I was looking for resources about control characters but I didnt find any valid escape character (according to wikipedia https://en.wikipedia.org/wiki/C0_and_C1_control_codes#C0_(ASCII_and_derivatives) it should be '\x10'(Data Link Escape) but in this case doesnt work). Eventualy I discovered by experimenting with it a bit that '\x16' escapes the next character(like \\) and that the special characters where 1,2,3,4,8,13,17,18,19,21,22,23,26,27,28 and 127. so I wrote a function that escapes them.  
 
 Now the next problem was the libc. Even though you could see the libc version by opening /proc/self/maps, I wasn't shure which libc was the right one (there are like 3 or 4 libc for the same version). I dont want to download twice after discovering one was not the correct one. So I decided to dump the whole libc using the script I wrote for dumping the program.  
 
